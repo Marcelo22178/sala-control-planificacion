@@ -167,3 +167,6 @@ Resultado esperado: `SMOKE OK`.
   a `404.html` para que las rutas profundas (`/funcionario`, `/jefatura`) carguen la SPA y publica
   el artefacto con `actions/deploy-pages`.
 - Cada push a `main` reconstruye y despliega la demo automáticamente.
+- Nota: al entrar directo a `/funcionario` o `/jefatura`, GitHub Pages responde con el `404.html`
+  copiado del index (la app carga normalmente, aunque el código HTTP sea 404). Es el mecanismo
+  estándar para SPA en Pages.

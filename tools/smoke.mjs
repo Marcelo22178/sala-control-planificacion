@@ -1,9 +1,12 @@
 /**
  * Smoke test de interacción vía Chrome DevTools Protocol.
- * Uso: node tools/smoke.mjs  (requiere la app en :4300 y Chrome con --remote-debugging-port=9222)
+ * Uso local: node tools/smoke.mjs (app en :4300 + Chrome con --remote-debugging-port=9222)
+ * Uso contra la demo: APP_URL=https://marcelo22178.github.io/sala-control-planificacion/funcionario node tools/smoke.mjs
  */
 const CDP = 'http://localhost:9222';
 const APP = process.env.APP_URL ?? 'http://localhost:4300/funcionario';
+const ORIGEN = new URL(APP);
+const BASE = ORIGEN.origin + ORIGEN.pathname.replace(/funcionario\/?$/, '');
 const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function conectar(wsUrl) {
@@ -146,7 +149,7 @@ async function main() {
   console.log('tras mini tarea:', trasMini);
 
   // 5) jefatura: estaciones, monitos y simulador de día
-  await enviar('Page.navigate', { url: 'http://localhost:4300/jefatura' });
+  await enviar('Page.navigate', { url: BASE + 'jefatura' });
   await esperar(3000);
   const jefaturaInicial = await evaluar(`(() => ({
     estaciones: document.querySelectorAll('app-tarjeta-estacion').length,
@@ -202,7 +205,7 @@ async function main() {
   console.log('aspecto aplicado:', aspectoAplicado);
 
   // persistencia tras recargar
-  await enviar('Page.navigate', { url: 'http://localhost:4300/jefatura' });
+  await enviar('Page.navigate', { url: BASE + 'jefatura' });
   await esperar(2500);
   const aspectoPersistido = await evaluar(`(() => {
     const raiz = document.documentElement;
@@ -230,7 +233,7 @@ async function main() {
   console.log('aspecto reiniciado:', aspectoReiniciado);
 
   // 7) editor del monito: se abre desde la tarjeta y se ve en jefatura
-  await enviar('Page.navigate', { url: 'http://localhost:4300/funcionario' });
+  await enviar('Page.navigate', { url: BASE + 'funcionario' });
   await esperar(2800);
   await evaluar(`document.querySelector('.tarjeta-monito')?.click()`);
   await esperar(350);
@@ -265,7 +268,7 @@ async function main() {
   })()`);
   console.log('monito personalizado:', monitoPersonalizado);
 
-  await enviar('Page.navigate', { url: 'http://localhost:4300/jefatura' });
+  await enviar('Page.navigate', { url: BASE + 'jefatura' });
   await esperar(2600);
   const monitoEnJefatura = await evaluar(`(() => ({
     polera: document.querySelectorAll('.estacion__monitos rect[fill="#fb923c"]').length,
@@ -273,7 +276,7 @@ async function main() {
   }))()`);
   console.log('monito en jefatura:', monitoEnJefatura);
 
-  await enviar('Page.navigate', { url: 'http://localhost:4300/funcionario' });
+  await enviar('Page.navigate', { url: BASE + 'funcionario' });
   await esperar(2600);
   const monitoPersiste = await evaluar(
     `Boolean(document.querySelector('.tarjeta-monito rect[fill="#fb923c"]'))`,
