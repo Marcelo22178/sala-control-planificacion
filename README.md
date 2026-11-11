@@ -41,11 +41,12 @@ Build de producción: `npm run build` (salida en `dist/mini-app`).
 ## Equipo de ejemplo
 
 Jefatura: **Catarina González**. Funcionarios: **Josías Montecinos**, **Jessi Montecinos**,
-**Marcelo Hurtado**, **Tamara Villega** y **Vicente Reyes**.
+**Marcelo Hurtado**, **Tamara Villega**, **Vicente Reyes** e **Ignacio Zura**.
 
 El seed deja estados listos para mostrar: dos personas en la misma tarea (Josías y Jessi), tres
 **cansados** (Josías, Jessi y Marcelo), una **agotada** (Tamara, 12 días), una **fresca** (Vicente),
-tareas al 0 % recién creadas y mini tareas activas. El usuario inicial del panel es Josías.
+tareas al 0 % recién creadas y mini tareas activas. **Ignacio Zura** queda sin tareas asignadas para
+mostrar la ficha en pausa. El usuario inicial del panel es Josías.
 
 ## Funcionario/a
 

@@ -312,7 +312,7 @@ async function main() {
     trasMini.ultima === 'Mini smoke: revisar anexos' &&
     jefaturaInicial.estaciones > 0 &&
     jefaturaInicial.trabajadores > jefaturaInicial.estaciones &&
-    jefaturaInicial.personas === 5 &&
+    jefaturaInicial.personas === 6 &&
     numero(jefaturaTrasDia.cansancioTop) > numero(jefaturaInicial.cansancioTop) &&
     panelAbierto.panel &&
     panelAbierto.opciones === 2 &&

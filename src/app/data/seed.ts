@@ -67,6 +67,16 @@ export function crearIntegrantes(): Integrante[] {
       tonoPelo: '#1c1c22',
       rol: 'funcionario',
     },
+    {
+      id: 'u-ignacio-zura',
+      nombre: 'Ignacio Zura',
+      cargo: 'Analista de Proyectos',
+      iniciales: 'IZ',
+      color: '#facc15',
+      tonoPiel: '#f2c9a0',
+      tonoPelo: '#2f2b3a',
+      rol: 'funcionario',
+    },
   ];
 }
 
