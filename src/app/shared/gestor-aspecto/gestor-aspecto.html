@@ -1,0 +1,259 @@
+<div class="gestor">
+  @if (abierto()) {
+    <button
+      type="button"
+      class="gestor__fondo"
+      tabindex="-1"
+      aria-hidden="true"
+      (click)="cerrar()"
+    ></button>
+
+    <section
+      id="panel-aspecto"
+      class="gestor__panel"
+      role="dialog"
+      aria-modal="false"
+      aria-label="Ajustes de aspecto y monito"
+    >
+      <header class="gestor__cabecera">
+        <div>
+          <p class="gestor__titulo"><app-icono nombre="paleta" [tamano]="16" /> Aspecto</p>
+          <p class="gestor__nota">
+            @if (seccion() === 'interfaz') {
+              Cambia el tema y el color de la interfaz. Las tareas siguen en memoria.
+            } @else {
+              Personaliza tu monito. Se guarda en este navegador y la jefatura también lo verá.
+            }
+          </p>
+        </div>
+        <button type="button" class="icono-boton" (click)="cerrar()" aria-label="Cerrar ajustes">
+          <app-icono nombre="cruz" [tamano]="14" />
+        </button>
+      </header>
+
+      <div class="gestor__tabs" role="tablist" aria-label="Secciones del gestor">
+        <button
+          type="button"
+          role="tab"
+          class="gestor__tab"
+          [class.gestor__tab--activa]="seccion() === 'interfaz'"
+          [attr.aria-selected]="seccion() === 'interfaz'"
+          (click)="ver('interfaz')"
+        >
+          <app-icono nombre="paleta" [tamano]="14" /> Interfaz
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="gestor__tab"
+          [class.gestor__tab--activa]="seccion() === 'monito'"
+          [attr.aria-selected]="seccion() === 'monito'"
+          (click)="ver('monito')"
+        >
+          <app-icono nombre="equipo" [tamano]="14" /> Mi monito
+        </button>
+      </div>
+
+      @if (seccion() === 'interfaz') {
+        <div class="gestor__grupo">
+          <span class="gestor__label">Tema</span>
+          <div class="gestor__opciones">
+            <button
+              type="button"
+              class="opcion"
+              [class.opcion--activa]="tema() === 'noche'"
+              [attr.aria-pressed]="tema() === 'noche'"
+              (click)="cambiarTema('noche')"
+            >
+              <app-icono nombre="luna" [tamano]="15" /> Noche
+            </button>
+            <button
+              type="button"
+              class="opcion"
+              [class.opcion--activa]="tema() === 'dia'"
+              [attr.aria-pressed]="tema() === 'dia'"
+              (click)="cambiarTema('dia')"
+            >
+              <app-icono nombre="dia" [tamano]="15" /> Día
+            </button>
+          </div>
+        </div>
+
+        <div class="gestor__grupo">
+          <span class="gestor__label">Color de acento</span>
+          <div class="gestor__acentos">
+            @for (opcion of acentos; track opcion.id) {
+              <button
+                type="button"
+                class="muestra"
+                [style.--muestra]="opcion.valor"
+                [class.muestra--activa]="acentoId() === opcion.id"
+                [attr.aria-label]="'Acento ' + opcion.nombre"
+                [attr.aria-pressed]="acentoId() === opcion.id"
+                [attr.title]="opcion.nombre"
+                (click)="cambiarAcento(opcion.id)"
+              >
+                @if (acentoId() === opcion.id) {
+                  <app-icono nombre="check" [tamano]="14" />
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="gestor__grupo gestor__grupo--fila">
+          <span class="gestor__label">Animaciones</span>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.switch--on]="animaciones()"
+            [attr.aria-checked]="animaciones()"
+            (click)="alternarAnimaciones()"
+          >
+            <span class="switch__bola"></span>
+            {{ animaciones() ? 'Sí' : 'No' }}
+          </button>
+        </div>
+
+        <div class="gestor__grupo gestor__grupo--fila">
+          <span class="gestor__label">Fondo cuadriculado</span>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.switch--on]="grilla()"
+            [attr.aria-checked]="grilla()"
+            (click)="alternarGrilla()"
+          >
+            <span class="switch__bola"></span>
+            {{ grilla() ? 'Sí' : 'No' }}
+          </button>
+        </div>
+
+        <footer class="gestor__pie">
+          <button type="button" class="boton boton--fantasma boton--pequeno" (click)="reiniciar()">
+            <app-icono nombre="refrescar" [tamano]="14" /> Restablecer
+          </button>
+          <span class="gestor__actual"
+            >{{ acento().nombre }} · {{ tema() === 'dia' ? 'Día' : 'Noche' }}</span
+          >
+        </footer>
+      } @else {
+        <div class="monito-editor">
+          <div class="monito-editor__preview">
+            <app-monito-pixel
+              [integranteId]="usuario().id"
+              [color]="usuario().color"
+              [tonoPiel]="usuario().tonoPiel"
+              [tonoPelo]="usuario().tonoPelo"
+              [estado]="miResumen().estado"
+              [trabajando]="miResumen().carga > 0"
+              [tamano]="88"
+              [nombre]="usuario().nombre"
+            />
+            <div class="monito-editor__datos">
+              <p class="monito-editor__nombre">{{ usuario().nombre }}</p>
+              <p class="monito-editor__nota">{{ usuario().cargo }}</p>
+              <span class="chip chip--cian">Así te ve la jefatura</span>
+            </div>
+          </div>
+
+          <div class="gestor__grupo">
+            <span class="gestor__label">Color de piel</span>
+            <div class="gestor__acentos">
+              @for (tono of pieles; track tono; let i = $index) {
+                <button
+                  type="button"
+                  class="muestra muestra--piel"
+                  [style.--muestra]="tono"
+                  [class.muestra--activa]="pielActual() === tono"
+                  [attr.aria-label]="'Piel ' + (i + 1)"
+                  [attr.aria-pressed]="pielActual() === tono"
+                  [attr.title]="'Piel ' + (i + 1)"
+                  (click)="cambiarPiel(tono)"
+                ></button>
+              }
+            </div>
+          </div>
+
+          <div class="gestor__grupo">
+            <span class="gestor__label">Color de pelo</span>
+            <div class="gestor__acentos">
+              @for (tono of pelos; track tono; let i = $index) {
+                <button
+                  type="button"
+                  class="muestra muestra--piel"
+                  [style.--muestra]="tono"
+                  [class.muestra--activa]="peloActual() === tono"
+                  [attr.aria-label]="'Pelo ' + (i + 1)"
+                  [attr.aria-pressed]="peloActual() === tono"
+                  [attr.title]="'Pelo ' + (i + 1)"
+                  (click)="cambiarPelo(tono)"
+                ></button>
+              }
+            </div>
+          </div>
+
+          <div class="gestor__grupo">
+            <span class="gestor__label">Color de polera</span>
+            <div class="gestor__acentos gestor__acentos--ancho">
+              @for (color of poleras; track color; let i = $index) {
+                <button
+                  type="button"
+                  class="muestra muestra--piel"
+                  [style.--muestra]="color"
+                  [class.muestra--activa]="poleraActual() === color"
+                  [attr.aria-label]="'Polera ' + (i + 1)"
+                  [attr.aria-pressed]="poleraActual() === color"
+                  [attr.title]="'Polera ' + (i + 1)"
+                  (click)="cambiarPolera(color)"
+                ></button>
+              }
+            </div>
+          </div>
+
+          <div class="gestor__grupo">
+            <span class="gestor__label">Cara</span>
+            <div class="gestor__caras">
+              @for (cara of caras; track cara.id) {
+                <button
+                  type="button"
+                  class="opcion"
+                  [class.opcion--activa]="caraActual() === cara.id"
+                  [attr.aria-pressed]="caraActual() === cara.id"
+                  (click)="cambiarCara(cara.id)"
+                >
+                  {{ cara.nombre }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <footer class="gestor__pie">
+            <button
+              type="button"
+              class="boton boton--fantasma boton--pequeno"
+              (click)="reiniciarMonito()"
+            >
+              <app-icono nombre="refrescar" [tamano]="14" /> Volver a mi estilo
+            </button>
+            <span class="gestor__actual">Se guarda en este navegador</span>
+          </footer>
+        </div>
+      }
+    </section>
+  }
+
+  <button
+    type="button"
+    class="gestor__disparador"
+    [class.gestor__disparador--activo]="abierto()"
+    [attr.aria-expanded]="abierto()"
+    aria-controls="panel-aspecto"
+    aria-label="Abrir gestor de aspecto y monito"
+    (click)="alternarPanel()"
+  >
+    <app-icono nombre="paleta" [tamano]="17" /> Aspecto
+  </button>
+</div>

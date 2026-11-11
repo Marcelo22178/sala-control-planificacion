@@ -1,0 +1,115 @@
+<div class="pagina pagina--inicio">
+  <header class="portada">
+    <div class="marca">
+      <span class="marca__pixel" aria-hidden="true"></span>
+      <div>
+        <p class="marca__depto">Departamento de Planificación<br />y Proyectos Estratégicos</p>
+        <p class="marca__demo">Demo visual · datos en memoria</p>
+      </div>
+    </div>
+    <div class="portada__equipo">
+      @for (persona of funcionarios(); track persona.id) {
+        <app-avatar [integrante]="persona" [tamano]="30" />
+      }
+    </div>
+  </header>
+
+  <main class="portada__cuerpo">
+    <section class="portada__hero">
+      <p class="eyebrow"><app-icono nombre="chispa" [tamano]="14" /> Sala de control del equipo</p>
+      <h1>¿En qué estás trabajando hoy?</h1>
+      <p class="portada__bajada">
+        Crea tareas en segundos, marca lo que estás haciendo y observa a tu pixel-art cansarse
+        cuando la carga sube. La jefatura ve a todo el equipo en vivo.
+      </p>
+      <div class="portada__datos">
+        <span
+          ><strong>{{ funcionarios().length }}</strong> integrantes</span
+        >
+        <span
+          ><strong>{{ tareas().length }}</strong> tareas cargadas</span
+        >
+        <span
+          ><strong>{{ kpis().personasTrabajando }}</strong> trabajando ahora</span
+        >
+      </div>
+    </section>
+
+    <section class="roles">
+      <a class="rol rol--funcionario" routerLink="/funcionario">
+        <div class="rol__arte">
+          <app-monito-pixel
+            color="#22d3ee"
+            tonoPiel="#f7d7b5"
+            tonoPelo="#2f2b3a"
+            [trabajando]="true"
+            estado="fresco"
+            [tamano]="96"
+            nombre="Funcionario trabajando"
+          />
+        </div>
+        <div class="rol__texto">
+          <p class="rol__etiqueta">Vista 01</p>
+          <h2>Soy funcionario/a</h2>
+          <p>
+            Crea tareas al vuelo, activa en qué trabajas y divide en mini tareas con doble click.
+          </p>
+          <span class="boton boton--lleno"
+            >Entrar a mi panel <app-icono nombre="flecha" [tamano]="16"
+          /></span>
+        </div>
+      </a>
+
+      <a class="rol rol--jefatura" routerLink="/jefatura">
+        <div class="rol__arte rol__arte--grupo">
+          <app-monito-pixel
+            color="#facc15"
+            tonoPiel="#a86b3c"
+            tonoPelo="#2f2b3a"
+            estado="agotado"
+            [trabajando]="true"
+            [tamano]="72"
+            nombre="Integrante agotada"
+          />
+          <app-monito-pixel
+            color="#34d399"
+            tonoPiel="#f2c9a0"
+            tonoPelo="#7a4b1e"
+            estado="cansado"
+            [trabajando]="true"
+            [tamano]="72"
+            nombre="Integrante cansada"
+          />
+          <app-monito-pixel
+            color="#a78bfa"
+            tonoPiel="#d9a066"
+            tonoPelo="#1c1c22"
+            estado="fresco"
+            [trabajando]="true"
+            [tamano]="72"
+            nombre="Integrante trabajando"
+          />
+        </div>
+        <div class="rol__texto">
+          <p class="rol__etiqueta">Vista 02</p>
+          <h2>Soy jefatura</h2>
+          <p>Mira monitos trabajando por tarea, días acumulados, cargas y nivel de cansancio.</p>
+          <span class="boton boton--lleno boton--ambar"
+            >Ver sala de control <app-icono nombre="grafico" [tamano]="16"
+          /></span>
+        </div>
+      </a>
+    </section>
+
+    <p class="portada__nota">
+      <app-icono nombre="alerta" [tamano]="15" />
+      Los datos viven solo en memoria: al recargar la página o cerrar el servidor vuelve el ejemplo
+      inicial. La capa de servicio ya está aislada para conectar una API más adelante.
+    </p>
+  </main>
+
+  <footer class="pie">
+    <span>Jefatura: {{ jefa().nombre }}</span>
+    <span>Angular · signals · pixel art en CSS y SVG</span>
+  </footer>
+</div>

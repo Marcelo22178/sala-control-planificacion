@@ -1,0 +1,131 @@
+<div class="pagina pagina--jefatura">
+  <header class="barra-sup">
+    <a class="marca marca--link" routerLink="/">
+      <span class="marca__pixel" aria-hidden="true"></span>
+      <div>
+        <p class="marca__depto">Planificación y Proyectos Estratégicos</p>
+        <p class="marca__demo">Sala de control · jefatura</p>
+      </div>
+    </a>
+
+    <div class="barra-sup__acciones">
+      <span class="en-vivo"><span class="punto punto--vivo"></span> En vivo</span>
+      <a routerLink="/funcionario" class="boton boton--fantasma">
+        <app-icono nombre="equipo" [tamano]="16" /> Panel funcionario
+      </a>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="cabecera-panel cabecera-panel--jefatura">
+      <div>
+        <p class="eyebrow"><app-icono nombre="grafico" [tamano]="14" /> {{ fecha }}</p>
+        <h1>Sala de control del equipo</h1>
+        <p class="subtitulo">
+          {{ enMarcha() }} de {{ funcionarios().length }} personas trabajando. Los monitos se cansan
+          con los días y con más de 4 tareas activas.
+        </p>
+        <div class="jefa-ficha">
+          <app-avatar [integrante]="jefa()" [tamano]="30" />
+          <span>{{ jefa().nombre }} · {{ jefa().cargo }}</span>
+        </div>
+      </div>
+
+      <div class="controles-demo tarjeta-vidrio">
+        <p class="controles-demo__titulo">
+          <app-icono nombre="dia" [tamano]="15" /> Simulador de demo
+        </p>
+        <p class="controles-demo__nota">Los datos viven en memoria y se reinician al recargar.</p>
+        <div class="controles-demo__botones">
+          <button type="button" class="boton boton--lleno boton--ambar" (click)="avanzarDia()">
+            <app-icono nombre="dia" [tamano]="15" /> Simular día +1
+          </button>
+          <button type="button" class="boton boton--fantasma" (click)="reiniciar()">
+            <app-icono nombre="refrescar" [tamano]="15" /> Reiniciar demo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="metricas metricas--jefatura">
+      <div class="metrica metrica--cian">
+        <span class="metrica__icono"><app-icono nombre="usuarios" [tamano]="16" /></span>
+        <div>
+          <strong>{{ kpis().personasTrabajando }}</strong><span>Personas trabajando</span>
+        </div>
+      </div>
+      <div class="metrica metrica--violeta">
+        <span class="metrica__icono"><app-icono nombre="play" [tamano]="16" /></span>
+        <div>
+          <strong>{{ kpis().tareasActivas }}</strong><span>Tareas activas</span>
+        </div>
+      </div>
+      <div class="metrica metrica--ambar">
+        <span class="metrica__icono"><app-icono nombre="objetivo" [tamano]="16" /></span>
+        <div>
+          <strong>{{ kpis().subtareasActivas }}</strong><span>Mini tareas activas</span>
+        </div>
+      </div>
+      <div class="metrica metrica--verde">
+        <span class="metrica__icono"><app-icono nombre="grafico" [tamano]="16" /></span>
+        <div>
+          <strong>{{ kpis().progresoPromedio }}%</strong><span>Avance promedio</span>
+        </div>
+      </div>
+      <div class="metrica metrica--roja" [class.metrica--pulso]="kpis().alertasCansancio > 0">
+        <span class="metrica__icono"><app-icono nombre="alerta" [tamano]="16" /></span>
+        <div>
+          <strong>{{ kpis().alertasCansancio }}</strong><span>Alertas de cansancio</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <header class="seccion__cabecera">
+        <div>
+          <h2>
+            <app-icono nombre="equipo" [tamano]="18" /> Sala de trabajo
+            <span class="contador">{{ estaciones().length }}</span>
+          </h2>
+          <p>
+            Cada tarjeta es una tarea con gente trabajando ahora. Si hay dos personas, verás dos
+            monitos.
+          </p>
+        </div>
+      </header>
+
+      <div class="grid-estaciones">
+        @for (estacion of estaciones(); track estacion.tarea.id) {
+          <app-tarjeta-estacion [estacion]="estacion" />
+        } @empty {
+          <div class="vacio">
+            <app-monito-pixel [tamano]="86" nombre="Monito descansando" />
+            <p>Nadie está trabajando ahora mismo. Pídele al equipo que active una tarea.</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="seccion">
+      <header class="seccion__cabecera">
+        <div>
+          <h2><app-icono nombre="grafico" [tamano]="18" /> Estado del equipo</h2>
+          <p>Ordenado por cansancio: días con la tarea más antigua y carga simultánea.</p>
+        </div>
+        <span class="chip">{{ tareas().length }} tareas en el tablero</span>
+      </header>
+
+      <div class="grid-personas">
+        @for (resumen of resumenEquipo(); track resumen.integrante.id) {
+          <app-tarjeta-persona [resumen]="resumen" />
+        }
+      </div>
+    </section>
+
+    <p class="nota-pie">
+      <app-icono nombre="alerta" [tamano]="15" />
+      Datos de demostración fijos en JSON: recargar la página o reiniciar el servidor restaura el
+      ejemplo. Más adelante se reemplaza el servicio por llamadas a la API.
+    </p>
+  </main>
+</div>

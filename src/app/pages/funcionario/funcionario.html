@@ -1,0 +1,244 @@
+<div class="pagina">
+  <header class="barra-sup">
+    <a class="marca marca--link" routerLink="/">
+      <span class="marca__pixel" aria-hidden="true"></span>
+      <div>
+        <p class="marca__depto">Planificación y Proyectos Estratégicos</p>
+        <p class="marca__demo">Panel de funcionario/a</p>
+      </div>
+    </a>
+
+    <div class="barra-sup__acciones">
+      <label class="selector-identidad">
+        <span>¿Quién eres?</span>
+        <select [value]="usuarioId()" (change)="cambiarUsuario($event)">
+          @for (persona of funcionarios(); track persona.id) {
+            <option [value]="persona.id">{{ persona.nombre }}</option>
+          }
+        </select>
+      </label>
+      <a routerLink="/jefatura" class="boton boton--fantasma">
+        <app-icono nombre="grafico" [tamano]="16" /> Jefatura
+      </a>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="cabecera-panel">
+      <div>
+        <p class="eyebrow"><app-icono nombre="chispa" [tamano]="14" /> Turno de hoy</p>
+        <h1>Hola, {{ primerNombre() }}</h1>
+        <p class="subtitulo">
+          {{ usuario().cargo }} · {{ miResumen().tareasActivas }} tarea(s) activa(s) y
+          {{ miResumen().subtareasActivas }} mini activa(s)
+        </p>
+      </div>
+
+      <div
+        class="tarjeta-monito tarjeta-vidrio"
+        role="button"
+        tabindex="0"
+        aria-label="Personalizar mi monito"
+        (click)="editarMonito()"
+        (keydown.enter)="editarMonito()"
+        (keydown.space)="editarMonito(); $event.preventDefault()"
+      >
+        <app-monito-pixel
+          [integranteId]="usuario().id"
+          [color]="usuario().color"
+          [tonoPiel]="usuario().tonoPiel"
+          [tonoPelo]="usuario().tonoPelo"
+          [trabajando]="enMarcha() > 0"
+          [estado]="miResumen().estado"
+          [tamano]="96"
+          [nombre]="usuario().nombre"
+        />
+        <div class="tarjeta-monito__info">
+          <span
+            class="estado-pastilla"
+            [class.estado-pastilla--viva]="enMarcha() > 0"
+            [class.estado-pastilla--alerta]="miResumen().estado !== 'fresco'"
+          >
+            <span class="punto" [class.punto--vivo]="enMarcha() > 0"></span>
+            {{ estado() }}
+          </span>
+          <p class="tarjeta-monito__cansancio">Cansancio {{ miResumen().cansancio }}%</p>
+          <div class="medidor" [class.medidor--alerta]="miResumen().cansancio >= 65">
+            <span [style.width.%]="miResumen().cansancio"></span>
+          </div>
+          <p class="tarjeta-monito__nota">
+            Sube con los días y cuando tienes más de 4 tareas activas.
+          </p>
+          <p class="tarjeta-monito__editar">
+            <app-icono nombre="paleta" [tamano]="12" /> Personalizar
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="captura tarjeta-vidrio">
+      <form (submit)="crear($event)">
+        <div class="captura__fila">
+          <span class="captura__icono" aria-hidden="true"
+            ><app-icono nombre="rayo" [tamano]="20"
+          /></span>
+          <input
+            #entrada
+            class="captura__input"
+            type="text"
+            [value]="nuevaTarea()"
+            (input)="escribir($event)"
+            placeholder="¿Qué estás haciendo? Escríbelo y presiona Enter…"
+            maxlength="120"
+            aria-label="Nueva tarea"
+          />
+          <button
+            type="submit"
+            class="boton boton--lleno boton--grande"
+            [disabled]="!nuevaTarea().trim()"
+          >
+            <app-icono nombre="rayo" [tamano]="16" /> Crear tarea
+          </button>
+        </div>
+
+        <div class="captura__equipo">
+          <span class="captura__label">
+            <app-icono nombre="usuarios" [tamano]="14" /> Sumar al equipo (opcional)
+          </span>
+          <div class="chips">
+            @for (persona of companeros(); track persona.id) {
+              <button
+                type="button"
+                class="chip chip--boton"
+                [class.chip--activo]="seleccionados().includes(persona.id)"
+                (click)="alternarCompanero(persona.id)"
+                [attr.aria-pressed]="seleccionados().includes(persona.id)"
+              >
+                <app-avatar [integrante]="persona" [tamano]="18" /> {{ persona.nombre }}
+                @if (seleccionados().includes(persona.id)) {
+                  <app-icono nombre="check" [tamano]="12" />
+                }
+              </button>
+            }
+          </div>
+          <span class="captura__atajo">
+            <kbd>N</kbd> enfoca el campo · <kbd>Enter</kbd> crea la tarea
+          </span>
+        </div>
+      </form>
+    </section>
+
+    <section class="metricas">
+      <div class="metrica metrica--cian">
+        <span class="metrica__icono"><app-icono nombre="play" [tamano]="16" /></span>
+        <div>
+          <strong>{{ miResumen().tareasActivas }}</strong><span>Tareas activas</span>
+        </div>
+      </div>
+      <div class="metrica metrica--violeta">
+        <span class="metrica__icono"><app-icono nombre="objetivo" [tamano]="16" /></span>
+        <div>
+          <strong>{{ miResumen().subtareasActivas }}</strong><span>Mini tareas activas</span>
+        </div>
+      </div>
+      <div class="metrica metrica--ambar">
+        <span class="metrica__icono"><app-icono nombre="grafico" [tamano]="16" /></span>
+        <div>
+          <strong>{{ miResumen().carga }}</strong><span>Carga total</span>
+        </div>
+      </div>
+      <div class="metrica metrica--roja">
+        <span class="metrica__icono"><app-icono nombre="reloj" [tamano]="16" /></span>
+        <div>
+          <strong>{{ miResumen().diasMax }} d</strong><span>Días con la más antigua</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <header class="seccion__cabecera">
+        <div>
+          <h2>
+            <app-icono nombre="equipo" [tamano]="18" /> Mis tareas
+            <span class="contador">{{ misTareas().length }}</span>
+          </h2>
+          <p>Click para activar · doble click para abrir las mini tareas.</p>
+        </div>
+        @if (enMarcha() > 0) {
+          <span class="chip chip--viva">
+            <span class="punto punto--vivo"></span> {{ enMarcha() }} en marcha
+          </span>
+        }
+      </header>
+
+      <div class="grid-tareas">
+        @for (tarea of misTareas(); track tarea.id) {
+          <app-tarjeta-tarea [tarea]="tarea" />
+        } @empty {
+          <div class="vacio">
+            <app-monito-pixel
+              [integranteId]="usuario().id"
+              [color]="usuario().color"
+              [tonoPiel]="usuario().tonoPiel"
+              [tonoPelo]="usuario().tonoPelo"
+              [tamano]="80"
+              nombre="Monito esperando tareas"
+            />
+            <p>Aún no tienes tareas. Escribe la primera arriba y presiona Enter.</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="seccion">
+      <header class="seccion__cabecera">
+        <div>
+          <h2><app-icono nombre="usuarios" [tamano]="18" /> Tareas del equipo</h2>
+          <p>Únete a una tarea de un colega: en el visor de jefatura aparecerán dos monitos.</p>
+        </div>
+      </header>
+
+      <div class="grid-equipo">
+        @for (tarea of tareasDelEquipo(); track tarea.id) {
+          <article class="tarea-equipo">
+            <div class="tarea-equipo__cabecera">
+              <h3>{{ tarea.titulo }}</h3>
+              <span class="chip"
+                ><app-icono nombre="reloj" [tamano]="13" /> {{ tarea.dias }} d</span
+              >
+            </div>
+            <app-barra-progreso
+              [progreso]="tarea.progreso"
+              [animada]="tarea.activaPor.length > 0"
+            />
+            <div class="tarea-equipo__pie">
+              <span class="tarea-equipo__avatares">
+                @for (persona of colaboradoresDe(tarea); track persona.id) {
+                  <app-avatar [integrante]="persona" [tamano]="22" />
+                }
+              </span>
+              <button
+                type="button"
+                class="boton boton--fantasma boton--pequeno"
+                (click)="unirme(tarea)"
+              >
+                <app-icono nombre="mas" [tamano]="14" /> Unirme
+              </button>
+            </div>
+          </article>
+        } @empty {
+          <p class="vacio-simple">No hay tareas de otros colegas pendientes.</p>
+        }
+      </div>
+    </section>
+
+    <p class="nota-pie">
+      <app-icono nombre="alerta" [tamano]="15" />
+      Demo en memoria: recargar la página devuelve los datos de ejemplo. No hay backend todavía.
+    </p>
+  </main>
+
+  @if (toast()) {
+    <div class="toast" role="status"><app-icono nombre="check" [tamano]="15" /> {{ toast() }}</div>
+  }
+</div>

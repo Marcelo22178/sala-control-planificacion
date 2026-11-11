@@ -1,0 +1,201 @@
+<article class="tarea" [class.tarea--viva]="enMarcha()">
+  <div
+    class="tarea__cabeza"
+    role="button"
+    tabindex="0"
+    (click)="clicTarjeta()"
+    (dblclick)="dobleClic()"
+    (keydown.enter)="alternar()"
+    (keydown.space)="alternar(); $event.preventDefault()"
+    [attr.aria-pressed]="trabajando()"
+    [attr.aria-expanded]="abierta()"
+  >
+    <div class="tarea__linea">
+      <span class="estado-pastilla" [class.estado-pastilla--viva]="enMarcha()">
+        <span class="punto" [class.punto--vivo]="enMarcha()"></span>
+        {{ etiquetaTarea() }}
+      </span>
+      @if (miniActivas() > 0) {
+        <span class="chip chip--cian">{{ miniActivas() }} mini activa(s)</span>
+      }
+    </div>
+
+    <h3 class="tarea__titulo">{{ tarea().titulo }}</h3>
+
+    <div class="tarea__meta">
+      <span class="chip"><app-icono nombre="reloj" [tamano]="13" /> {{ tarea().dias }} d</span>
+      <span class="chip"
+        ><app-icono nombre="objetivo" [tamano]="13" /> {{ tarea().miniTareas.length }} mini</span
+      >
+      <span class="tarea__colaboradores">
+        @for (persona of colaboradores(); track persona.id) {
+          <app-avatar [integrante]="persona" [tamano]="24" />
+        }
+      </span>
+    </div>
+
+    <div class="tarea__progreso">
+      <app-barra-progreso [progreso]="tarea().progreso" [animada]="enMarcha()" />
+    </div>
+
+    <p class="tarea__ayuda">Click: trabajar · Doble click: mini tareas</p>
+  </div>
+
+  <div class="tarea__lado">
+    <app-monito-pixel
+      [integranteId]="usuarioId()"
+      [color]="usuario().color"
+      [tonoPiel]="usuario().tonoPiel"
+      [tonoPelo]="usuario().tonoPelo"
+      [trabajando]="enMarcha()"
+      [estado]="miResumen().estado"
+      [tamano]="72"
+      [nombre]="usuario().nombre"
+    />
+    <span class="tarea__animo" [class.tarea__animo--alerta]="miResumen().estado !== 'fresco'">
+      {{ etiqueta() }}
+    </span>
+    <div class="tarea__botones">
+      <button
+        type="button"
+        class="icono-boton"
+        (click)="alternar()"
+        [attr.aria-label]="trabajando() ? 'Pausar esta tarea' : 'Trabajar en esta tarea'"
+      >
+        <app-icono [nombre]="trabajando() ? 'pausa' : 'play'" [tamano]="16" />
+      </button>
+      <button
+        type="button"
+        class="icono-boton"
+        (click)="dobleClic()"
+        [attr.aria-label]="abierta() ? 'Cerrar mini tareas' : 'Abrir mini tareas'"
+      >
+        <span class="chevron" [class.chevron--abierto]="abierta()">
+          <app-icono nombre="chevron" [tamano]="16" />
+        </span>
+      </button>
+      <button
+        type="button"
+        class="icono-boton icono-boton--peligro"
+        (click)="eliminar()"
+        aria-label="Eliminar tarea"
+      >
+        <app-icono nombre="basura" [tamano]="15" />
+      </button>
+    </div>
+  </div>
+
+  @if (abierta()) {
+    <div class="subtareas">
+      <header class="subtareas__cabecera">
+        <div>
+          <h4><app-icono nombre="objetivo" [tamano]="15" /> Mini tareas</h4>
+          <p>Activa todas las que quieras: puedes trabajar en varias a la vez.</p>
+        </div>
+        <button
+          type="button"
+          class="boton boton--fantasma boton--pequeno"
+          (click)="aplicarPromedio()"
+          [disabled]="tarea().miniTareas.length === 0"
+        >
+          <app-icono nombre="refrescar" [tamano]="14" /> Usar promedio ({{ promedioMini() }}%)
+        </button>
+      </header>
+
+      <div class="subtareas__lista">
+        @for (mini of tarea().miniTareas; track mini.id) {
+          <div class="mini" [class.mini--viva]="estadoMini(mini.id)">
+            <button
+              type="button"
+              class="mini__toggle"
+              (click)="alternarMini(mini.id)"
+              [attr.aria-pressed]="estadoMini(mini.id)"
+              [attr.aria-label]="(estadoMini(mini.id) ? 'Pausar ' : 'Trabajar en ') + mini.titulo"
+            >
+              <app-icono [nombre]="estadoMini(mini.id) ? 'pausa' : 'play'" [tamano]="13" />
+            </button>
+            <span class="mini__titulo">{{ mini.titulo }}</span>
+            <input
+              class="mini__rango"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              [value]="mini.progreso"
+              (input)="cambiarProgresoMini(mini.id, $event)"
+              [attr.aria-label]="'Avance de ' + mini.titulo"
+            />
+            <span class="mini__valor">{{ mini.progreso }}%</span>
+            <button
+              type="button"
+              class="icono-boton icono-boton--peligro"
+              (click)="eliminarMini(mini.id, mini.titulo)"
+              aria-label="Eliminar mini tarea"
+            >
+              <app-icono nombre="basura" [tamano]="13" />
+            </button>
+          </div>
+        } @empty {
+          <p class="subtareas__vacio">
+            Sin mini tareas todavía. Divide esta tarea en pasos chicos para avanzar más rápido.
+          </p>
+        }
+      </div>
+
+      <form class="subtareas__nueva" (submit)="agregarMini($event)">
+        <input
+          type="text"
+          [value]="nuevaMini()"
+          (input)="escribirMini($event)"
+          placeholder="Nueva mini tarea y Enter…"
+          maxlength="90"
+          aria-label="Título de la nueva mini tarea"
+        />
+        <button type="submit" class="boton boton--lleno boton--pequeno">
+          <app-icono nombre="mas" [tamano]="14" /> Agregar
+        </button>
+      </form>
+
+      <div class="subtareas__pie">
+        <label class="rango-grande">
+          <span>Avance de la tarea grande</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            [value]="tarea().progreso"
+            (input)="cambiarProgreso($event)"
+            aria-label="Avance de la tarea grande"
+          />
+          <strong>{{ tarea().progreso }}%</strong>
+        </label>
+
+        <div class="subtareas__equipo">
+          @if (sumandoColega()) {
+            <div class="chips">
+              @for (persona of companerosDisponibles(); track persona.id) {
+                <button type="button" class="chip chip--boton" (click)="sumarColega(persona.id)">
+                  <app-avatar [integrante]="persona" [tamano]="18" /> {{ persona.nombre }}
+                </button>
+              } @empty {
+                <span class="chip">Todo el equipo ya está asignado</span>
+              }
+            </div>
+          }
+          <button
+            type="button"
+            class="boton boton--fantasma boton--pequeno"
+            (click)="sumandoColega.set(!sumandoColega())"
+            [disabled]="companerosDisponibles().length === 0"
+          >
+            <app-icono nombre="usuarios" [tamano]="14" /> Sumar colega
+          </button>
+          <button type="button" class="boton boton--fantasma boton--pequeno" (click)="salir()">
+            <app-icono nombre="cruz" [tamano]="14" /> Salir de la tarea
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</article>

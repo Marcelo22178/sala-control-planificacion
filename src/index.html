@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Planificación · Sala de control</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Demo visual del Departamento de Planificación y Proyectos Estratégicos: tareas rápidas, mini tareas y monitos pixel art que se cansan según la carga."
+    />
+    <meta name="theme-color" content="#070d18" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script>
+      // Aplica el aspecto guardado antes del primer paint (evita el destello).
+      (function () {
+        try {
+          var raiz = document.documentElement;
+          var crudo = localStorage.getItem('planificacion.aspecto.v1');
+          var datos = crudo ? JSON.parse(crudo) : null;
+          raiz.dataset.tema = datos && datos.tema === 'dia' ? 'dia' : 'noche';
+          raiz.dataset.animaciones = datos && datos.animaciones === false ? 'off' : 'on';
+          raiz.dataset.grilla = datos && datos.grilla === false ? 'off' : 'on';
+          var acentos = {
+            cian: '#22d3ee',
+            ambar: '#fbbf24',
+            violeta: '#a78bfa',
+            verde: '#34d399',
+            rosa: '#fb7185',
+          };
+          var color = datos && acentos[datos.acento];
+          if (color) {
+            raiz.style.setProperty('--cian', color);
+            var n = parseInt(color.slice(1), 16);
+            var tono = function (valor) {
+              var hex = Math.round(valor * 0.62).toString(16);
+              return hex.length === 1 ? '0' + hex : hex;
+            };
+            raiz.style.setProperty(
+              '--cian-oscuro',
+              '#' + tono((n >> 16) & 255) + tono((n >> 8) & 255) + tono(n & 255),
+            );
+          }
+        } catch (error) {
+          /* sin preferencias guardadas: se usan los valores por defecto */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

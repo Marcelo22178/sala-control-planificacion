@@ -1,0 +1,71 @@
+<article
+  class="persona"
+  [class.persona--cansada]="resumen().estado === 'cansado'"
+  [class.persona--agotada]="resumen().estado === 'agotado'"
+>
+  <header class="persona__cabecera">
+    <app-avatar [integrante]="resumen().integrante" [tamano]="36" />
+    <div class="persona__identidad">
+      <h3>{{ resumen().integrante.nombre }}</h3>
+      <p>{{ resumen().integrante.cargo }}</p>
+    </div>
+    <span
+      class="estado-pastilla estado-pastilla--compacta"
+      [class.estado-pastilla--viva]="enMarcha()"
+      [class.estado-pastilla--alerta]="resumen().estado !== 'fresco'"
+    >
+      <span class="punto" [class.punto--vivo]="enMarcha()"></span>
+      {{ etiqueta() }}
+    </span>
+  </header>
+
+  <div class="persona__cuerpo">
+    <app-monito-pixel
+      [integranteId]="resumen().integrante.id"
+      [color]="resumen().integrante.color"
+      [tonoPiel]="resumen().integrante.tonoPiel"
+      [tonoPelo]="resumen().integrante.tonoPelo"
+      [estado]="resumen().estado"
+      [trabajando]="enMarcha()"
+      [tamano]="84"
+      [nombre]="resumen().integrante.nombre"
+    />
+
+    <div class="persona__datos">
+      <div class="dato">
+        <strong>{{ resumen().tareasActivas }}</strong>
+        <span>tareas</span>
+      </div>
+      <div class="dato">
+        <strong>{{ resumen().subtareasActivas }}</strong>
+        <span>mini</span>
+      </div>
+      <div class="dato">
+        <strong>{{ resumen().diasMax }} d</strong>
+        <span>más antigua</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="persona__cansancio">
+    <div class="persona__cansancio-linea">
+      <span><app-icono nombre="alerta" [tamano]="13" /> Cansancio</span>
+      <strong>{{ resumen().cansancio }}%</strong>
+    </div>
+    <div
+      class="medidor"
+      [class.medidor--cansado]="resumen().cansancio >= 30 && resumen().cansancio < 65"
+      [class.medidor--alerta]="resumen().cansancio >= 65"
+    >
+      <span [style.width.%]="resumen().cansancio"></span>
+    </div>
+  </div>
+
+  <div class="persona__tareas">
+    @for (tarea of resumen().tareasEnCurso; track tarea.id) {
+      <span class="chip chip--tarea">{{ tarea.titulo }} · {{ tarea.dias }} d</span>
+    } @empty {
+      <span class="chip chip--gris">Sin tareas activas</span>
+    }
+  </div>
+</article>

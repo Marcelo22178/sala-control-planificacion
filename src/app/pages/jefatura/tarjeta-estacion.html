@@ -1,0 +1,81 @@
+<article class="estacion" [class.estacion--alerta]="agotados() > 0">
+  <header class="estacion__cabecera">
+    <div class="estacion__linea">
+      <span class="estacion__tipo"><app-icono nombre="equipo" [tamano]="13" /> En curso</span>
+      @if (agotados() > 0) {
+        <span class="chip chip--alerta">
+          <app-icono nombre="alerta" [tamano]="13" /> {{ agotados() }} agotado(s)
+        </span>
+      }
+    </div>
+    <h3 class="estacion__titulo">{{ estacion().tarea.titulo }}</h3>
+    <div class="estacion__meta">
+      <span class="chip"
+        ><app-icono nombre="reloj" [tamano]="13" /> {{ estacion().tarea.dias }} d</span
+      >
+      <span class="chip"
+        ><app-icono nombre="usuarios" [tamano]="13" />
+        {{ estacion().trabajadores.length }} trabajando</span
+      >
+      @if (estacion().subtareasActivas.length > 0) {
+        <span class="chip chip--cian">{{ estacion().subtareasActivas.length }} mini activa(s)</span>
+      }
+    </div>
+  </header>
+
+  <div class="estacion__progreso">
+    <app-barra-progreso [progreso]="estacion().tarea.progreso" [animada]="true" />
+  </div>
+
+  <div class="estacion__monitos">
+    @for (persona of estacion().trabajadores; track persona.id) {
+      <div class="celda-monito">
+        <div class="celda-monito__arte">
+          <app-monito-pixel
+            [integranteId]="persona.id"
+            [color]="persona.color"
+            [tonoPiel]="persona.tonoPiel"
+            [tonoPelo]="persona.tonoPelo"
+            [estado]="estadoDe(persona.id)"
+            [trabajando]="true"
+            [tamano]="92"
+            [nombre]="persona.nombre"
+          />
+        </div>
+        <span class="celda-monito__nombre">{{ primerNombre(persona.nombre) }}</span>
+        <span
+          class="celda-monito__estado"
+          [class.celda-monito__estado--cansado]="estadoDe(persona.id) === 'cansado'"
+          [class.celda-monito__estado--agotado]="estadoDe(persona.id) === 'agotado'"
+        >
+          {{ etiquetaDe(persona.id) }} · {{ cansancioDe(persona.id) }}%
+        </span>
+        <div
+          class="medidor medidor--mini"
+          [class.medidor--cansado]="cansancioDe(persona.id) >= 30 && cansancioDe(persona.id) < 65"
+          [class.medidor--alerta]="cansancioDe(persona.id) >= 65"
+        >
+          <span [style.width.%]="cansancioDe(persona.id)"></span>
+        </div>
+        <span class="celda-monito__carga">{{ cargaDe(persona.id) }} de carga</span>
+      </div>
+    }
+  </div>
+
+  @if (estacion().subtareasActivas.length > 0) {
+    <div class="estacion__subs">
+      @for (subtarea of estacion().subtareasActivas; track subtarea.mini.id) {
+        <div class="sub">
+          <span class="sub__punto" aria-hidden="true"></span>
+          <span class="sub__titulo">{{ subtarea.mini.titulo }}</span>
+          <span class="sub__personas">
+            @for (persona of subtarea.trabajadores; track persona.id) {
+              <app-avatar [integrante]="persona" [tamano]="20" />
+            }
+          </span>
+          <span class="sub__valor">{{ subtarea.mini.progreso }}%</span>
+        </div>
+      }
+    </div>
+  }
+</article>

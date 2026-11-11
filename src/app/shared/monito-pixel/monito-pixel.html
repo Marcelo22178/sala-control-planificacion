@@ -1,0 +1,119 @@
+<div
+  class="monito"
+  [class.monito--trabajando]="trabajando()"
+  [class.monito--cansado]="estado() === 'cansado'"
+  [class.monito--agotado]="estado() === 'agotado'"
+  [style.width.px]="tamano()"
+  [style.height.px]="alto()"
+  role="img"
+  [attr.aria-label]="nombre() + (trabajando() ? ', trabajando' : ', en pausa') + ', ' + estado()"
+>
+  <svg class="monito__svg" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true">
+    <g class="monito__cuerpo">
+      @for (pixel of pixeles(); track $index) {
+        <rect
+          [attr.x]="pixel.x"
+          [attr.y]="pixel.y"
+          width="1"
+          height="1"
+          [attr.fill]="pixel.color"
+        />
+      }
+
+      @if (estado() === 'fresco') {
+        <rect x="5" y="4" width="2" height="2" fill="#26303f" />
+        <rect x="9" y="4" width="2" height="2" fill="#26303f" />
+        <rect x="6" y="7" width="4" height="1" fill="#9a4b3c" />
+      } @else if (estado() === 'cansado') {
+        <rect x="5" y="5" width="2" height="1" fill="#26303f" />
+        <rect x="9" y="5" width="2" height="1" fill="#26303f" />
+        <rect x="4" y="4.2" width="2.4" height="0.6" fill="#26303f" opacity="0.35" />
+        <rect x="9.6" y="4.2" width="2.4" height="0.6" fill="#26303f" opacity="0.35" />
+        <rect x="6" y="7" width="4" height="0.8" fill="#9a4b3c" />
+      } @else {
+        <rect x="5" y="5.2" width="2" height="0.7" fill="#26303f" />
+        <rect x="9" y="5.2" width="2" height="0.7" fill="#26303f" />
+        <rect x="7" y="7" width="2" height="1.5" fill="#7c3a3a" />
+      }
+
+      @if (caraFinal() === 'barba') {
+        <g [attr.fill]="pelo()">
+          <rect x="4.6" y="5.4" width="0.6" height="2.4" />
+          <rect x="10.8" y="5.4" width="0.6" height="2.4" />
+          <rect x="6" y="7.9" width="4" height="0.6" />
+          <rect x="6.8" y="8.4" width="2.4" height="0.5" />
+        </g>
+      }
+
+      @if (caraFinal() === 'pecas') {
+        <g [attr.fill]="pecas()" opacity="0.65">
+          <rect x="4.6" y="6.2" width="0.55" height="0.55" />
+          <rect x="11" y="6.2" width="0.55" height="0.55" />
+          <rect x="6.2" y="6.6" width="0.5" height="0.5" />
+          <rect x="9.4" y="6.6" width="0.5" height="0.5" />
+        </g>
+      }
+
+      @if (caraFinal() === 'lentes') {
+        <g class="monito__lentes" fill="none" stroke="#1f2937" stroke-width="0.32">
+          <rect x="4.3" y="3.55" width="3" height="2.45" rx="0.3" />
+          <rect x="8.7" y="3.55" width="3" height="2.45" rx="0.3" />
+          <path d="M7.3 4.6h1.4" />
+        </g>
+      }
+    </g>
+
+    @if (trabajando()) {
+      <g class="monito__equipo">
+        <rect
+          x="3.5"
+          y="12.55"
+          width="9"
+          height="2.25"
+          rx="0.3"
+          fill="#0b1220"
+          stroke="#3f4c63"
+          stroke-width="0.25"
+        />
+        <rect x="4.2" y="13" width="7.6" height="1.35" fill="#123047" />
+        <rect class="monito__codigo" x="4.7" y="13.25" width="3.6" height="0.32" fill="#22d3ee" />
+        <rect class="monito__codigo" x="4.7" y="13.75" width="5.2" height="0.32" fill="#7dd3fc" />
+        <rect
+          x="3"
+          y="14.85"
+          width="10"
+          height="0.95"
+          rx="0.2"
+          fill="#1e293b"
+          stroke="#3f4c63"
+          stroke-width="0.25"
+        />
+      </g>
+    }
+
+    <g class="monito__brazo monito__brazo--izq">
+      <rect x="2" y="10.3" width="2" height="4.3" [attr.fill]="colorCamisa()" />
+      <rect x="2" y="14.6" width="2" height="0.9" [attr.fill]="piel()" />
+    </g>
+    <g class="monito__brazo monito__brazo--der">
+      <rect x="12" y="10.3" width="2" height="4.3" [attr.fill]="colorCamisa()" />
+      <rect x="12" y="14.6" width="2" height="0.9" [attr.fill]="piel()" />
+    </g>
+  </svg>
+
+  @if (estado() !== 'fresco') {
+    <span class="monito__sudor" aria-hidden="true"></span>
+    <span class="monito__sudor monito__sudor--dos" aria-hidden="true"></span>
+  }
+
+  @if (estado() === 'agotado') {
+    <span class="monito__zzz" aria-hidden="true">z</span>
+    <span class="monito__zzz monito__zzz--dos" aria-hidden="true">z</span>
+    <span class="monito__zzz monito__zzz--tres" aria-hidden="true">z</span>
+  }
+
+  @if (trabajando()) {
+    <span class="monito__chispa" aria-hidden="true"></span>
+    <span class="monito__chispa monito__chispa--dos" aria-hidden="true"></span>
+  }
+</div>
